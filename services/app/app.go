@@ -54,7 +54,7 @@ func InitApp() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173", "*"}, // Add * or your Vercel frontend domain in production
+		AllowOrigins:     []string{"http://localhost:5173", "http://18.61.174.8:5173", "http://18.61.174.8"}, // These are the FRONTEND URLs allowed to talk to your backend
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
