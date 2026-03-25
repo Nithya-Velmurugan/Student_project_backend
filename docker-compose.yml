@@ -1,33 +1,33 @@
-version: '3.8'
+version: "3.9"
 
 services:
   app:
-    build:
-      context: .
-    container_name: stu_backend_app
+    build: .
+    container_name: go_app
     ports:
-      - "8080:8082"
+      - "8022:8082"
     environment:
-      - DB_HOST=db
-      - DB_USER=postgres
-      - DB_PASSWORD=yourpassword
-      - DB_NAME=postgres
-      - DB_PORT=5432
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: 4207
+      DB_NAME: postgres
+      DB_PORT: 5432
     depends_on:
       - db
-      
+    restart: always
+
   db:
-    image: postgres:15-alpine
-    container_name: stu_backend_postgres
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_PASSWORD: 4207
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
 
 volumes:
   postgres_data:
