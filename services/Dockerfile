@@ -12,4 +12,4 @@ RUN go build -o app ./services/cmd
 
 EXPOSE 8080
 
-CMD ["./app"]
+CMD ["go", "run", "./services/cmd/main.go"]
