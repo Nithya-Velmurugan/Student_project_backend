@@ -4,7 +4,6 @@ services:
   app:
     build:
       context: .
-      dockerfile: services/Dockerfile
     container_name: stu_backend_app
     ports:
       - "8080:8082"

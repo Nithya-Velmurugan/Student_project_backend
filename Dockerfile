@@ -4,9 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-# ❌ REMOVE THIS LINE
-# RUN go mod init student-service
-
 RUN go mod tidy
 RUN go build -o app ./services/cmd
 
