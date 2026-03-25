@@ -19,12 +19,7 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 type RegisterRequest struct {
 	Email    string     `json:"email" binding:"required,email"`
 	Password string     `json:"password" binding:"required,min=6"`
-	Role     model.Role `json:"role" binding:"required"`
-}
-
-type LoginRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	Role     model.Role `json:"role"`
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -34,14 +29,23 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
+	// Default role to Student if empty
+	if req.Role == "" {
+		req.Role = model.StudentRole
+	}
+
 	err := h.Service.Register(req.Email, req.Password, req.Role)
 	if err != nil {
-		// Better error handling could be done depending on constraints
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+}
+
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -60,10 +64,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-func RegisterAuthRoutes(r *gin.Engine, h *AuthHandler) {
+func RegisterAuthRoutes(r *gin.Engine, handler *AuthHandler) {
 	auth := r.Group("/auth")
 	{
-		auth.POST("/register", h.Register)
-		auth.POST("/login", h.Login)
+		auth.POST("/register", handler.Register)
+		auth.POST("/login", handler.Login)
 	}
 }

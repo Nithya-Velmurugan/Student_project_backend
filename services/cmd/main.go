@@ -2,20 +2,38 @@ package main
 
 import (
 	"log"
-	"os"
-	"student-service/services/app"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"student-service/services/config"
+	"student-service/services/internal/handler"
+	"student-service/services/internal/repository"
+	"student-service/services/internal/service"
 )
 
 func main() {
-	r := app.InitApp()
+	config.ConnectDatabase()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	if config.DB == nil {
+		log.Fatal("Failed to connect to database in main")
 	}
 
-	log.Printf("Server starting on port %s", port)
-	if err := r.Run(":" + port); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	userRepo := repository.NewUserRepository(config.DB)
+	authService := service.NewAuthService(userRepo)
+	authHandler := handler.NewAuthHandler(authService)
+
+	r := gin.Default()
+
+	// Reliable CORS config setup
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Accept"}
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
+	r.Use(cors.New(corsConfig))
+
+	// routes
+	handler.RegisterAuthRoutes(r, authHandler)
+	handler.RegisterStudentRoutes(r)
+
+	r.Run(":8082")
 }
