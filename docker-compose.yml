@@ -7,7 +7,7 @@ services:
       dockerfile: services/Dockerfile
     container_name: stu_backend_app
     ports:
-      - "8080:8080"
+      - "8080:8082"
     environment:
       - DB_HOST=db
       - DB_USER=postgres
