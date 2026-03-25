@@ -1,10 +1,15 @@
-FROM golang:1.22
+FROM golang:1.24-alpine
 
 WORKDIR /app
+
 COPY . .
 
-RUN go mod init student-service
-RUN go mod tidy
-RUN go build -o main ./cmd
+# ❌ REMOVE THIS LINE
+# RUN go mod init student-service
 
-CMD ["./main"]
+RUN go mod tidy
+RUN go build -o app ./services/cmd
+
+EXPOSE 8080
+
+CMD ["./app"]
