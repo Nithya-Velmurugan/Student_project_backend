@@ -10,6 +10,6 @@ COPY . .
 RUN go mod tidy
 RUN go build -o app ./services/cmd
 
-EXPOSE 8080
+EXPOSE 8082
 
 CMD ["./app"]
