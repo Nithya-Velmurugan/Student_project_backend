@@ -50,18 +50,21 @@ func ConnectDatabase() {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		host, user, password, dbname, port, sslmode)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Printf("Failed to connect to postgres: %v\n", err)
-	} else {
-		DB = db
-		fmt.Println("PostgreSQL connection established.")
+	var db *gorm.DB
+var err error
 
-		// Auto Migrate
-		fmt.Println("Running AutoMigration...")
-		err = DB.AutoMigrate(&model.User{}, &model.Student{})
-		if err != nil {
-			log.Printf("Failed to migrate database: %v\n", err)
-		}
-	}
+for i := 0; i < 10; i++ {
+    db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err == nil {
+        log.Println("✅ Connected to DB")
+        break
+    }
+
+    log.Println("⏳ Waiting for DB...")
+    time.Sleep(2 * time.Second)
+}
+
+if err != nil {
+    log.Fatal("❌ Failed to connect DB:", err)
+}
 }
