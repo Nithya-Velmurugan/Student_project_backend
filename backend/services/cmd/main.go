@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	config.ConnectDatabase()
+	config.ConnectDB()
 
 	if config.DB == nil {
 		log.Fatal("Failed to connect to database in main")
