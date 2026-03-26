@@ -8,6 +8,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"student-service/services/internal/model"
 )
 
 var DB *gorm.DB
@@ -28,6 +29,13 @@ func ConnectDB() {
 		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
 			log.Println("✅ Connected to DB")
+			
+			// Auto Migrate
+			fmt.Println("Running AutoMigration...")
+			err = DB.AutoMigrate(&model.User{}, &model.Student{})
+			if err != nil {
+				log.Printf("Failed to migrate database: %v\n", err)
+			}
 			return
 		}
 
