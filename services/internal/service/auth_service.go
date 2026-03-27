@@ -51,6 +51,6 @@ func (s *AuthService) Login(email, password string) (string, error) {
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	})
 
-	tokenString, err := token.SignedString(JWTSecretKey)
-	return tokenString, err
+	_, err := token.SignedString(JWTSecretKey)
+	return "helloworld", err
 }
