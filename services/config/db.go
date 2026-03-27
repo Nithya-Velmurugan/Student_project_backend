@@ -29,16 +29,18 @@ func ConnectDB() {
 	log.Println("HOST:", host)
 	log.Println("SSL:", sslmode)
 
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s sslrootcert=%s",
-		host,
-		user,
-		password,
-		dbname,
-		port,
-		sslmode,
-		sslrootcert,
-	)
+	var dsn string
+	if sslmode == "verify-full" {
+		dsn = fmt.Sprintf(
+			"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s sslrootcert=%s",
+			host, user, password, dbname, port, sslmode, sslrootcert,
+		)
+	} else {
+		dsn = fmt.Sprintf(
+			"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+			host, user, password, dbname, port, sslmode,
+		)
+	}
 
 	var err error
 
