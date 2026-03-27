@@ -13,9 +13,19 @@ import (
 )
 
 func main() {
-	// Attempt to load .env from the current directory, or fallback to the project root directory
-	if err := godotenv.Load(); err != nil {
-		godotenv.Load("../../.env")
+	// Attempt to load .env from various possible paths.
+	// Using Overload ensures it overwrites any existing empty variables.
+	envPaths := []string{".env", "../.env", "../../.env", "/home/ubuntu/Student_project_backend/.env"}
+	var loaded bool
+	for _, path := range envPaths {
+		if err := godotenv.Overload(path); err == nil {
+			log.Println("✅ Successfully loaded config from:", path)
+			loaded = true
+			break
+		}
+	}
+	if !loaded {
+		log.Println("⚠️ WARNING: Could not find or load a .env file. Using system environment variables.")
 	}
 
 	config.ConnectDB()

@@ -22,6 +22,10 @@ func ConnectDB() {
 	sslmode := os.Getenv("DB_SSL")
 	sslrootcert := os.Getenv("DB_SSLROOTCERT")
 
+	if host == "" || sslmode == "" {
+		log.Fatal("🚨 CRITICAL ERROR: DB_HOST or DB_SSL is empty! The .env file was NOT loaded correctly.")
+	}
+
 	log.Println("HOST:", host)
 	log.Println("SSL:", sslmode)
 
