@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"student-service/services/config"
 	"student-service/services/internal/handler"
 	"student-service/services/internal/repository"
@@ -12,6 +13,11 @@ import (
 )
 
 func main() {
+	// Attempt to load .env from the current directory, or fallback to the project root directory
+	if err := godotenv.Load(); err != nil {
+		godotenv.Load("../../.env")
+	}
+
 	config.ConnectDB()
 
 	if config.DB == nil {
