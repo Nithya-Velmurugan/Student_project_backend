@@ -6,6 +6,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
                 checkout scm
@@ -19,8 +20,8 @@ pipeline {
                     file(credentialsId: 'pem-file', variable: 'PEM_FILE')
                 ]) {
                     sh '''
-                    sudo cp $ENV_FILE .env
-                    sudo cp $PEM_FILE global-bundle.pem
+                    cp $ENV_FILE .env
+                    cp $PEM_FILE global-bundle.pem
                     '''
                 }
             }
@@ -54,10 +55,10 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Deployment Successful!"
+            echo "🎉 Deployment Successful! Application is running on port 8082."
         }
         failure {
-            echo "❌ Deployment Failed!"
+            echo "❌ Deployment Failed! Check Jenkins logs."
         }
     }
 }
