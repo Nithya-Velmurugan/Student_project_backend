@@ -27,6 +27,14 @@ pipeline {
             }
         }
 
+        stage('Build Binary') {
+            steps {
+                sh '''
+                go build -o app ./services/cmd
+                '''
+            }
+        }
+
         stage('Build Docker') {
             steps {
                 sh 'docker build -t student-app .'
