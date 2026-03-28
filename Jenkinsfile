@@ -19,8 +19,8 @@ pipeline {
                     file(credentialsId: 'pem-file', variable: 'PEM_FILE')
                 ]) {
                     sh '''
-                    cp $ENV_FILE .env
-                    cp $PEM_FILE global-bundle.pem
+                    sudo cp $ENV_FILE .env
+                    sudo cp $PEM_FILE global-bundle.pem
                     '''
                 }
             }
