@@ -28,16 +28,16 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh 'sudo docker build -t student-app .'
+                sh 'docker build -t student-app .'
             }
         }
 
         stage('Run App') {
             steps {
                 sh '''
-                sudo docker stop student-app || true
-                sudo docker rm student-app || true
-                sudo docker run -d -p 8082:8082 \
+                docker stop student-app || true
+                docker rm student-app || true
+                docker run -d -p 8082:8082 \
                 --env-file .env \
                 --name student-app student-app
                 '''
@@ -46,7 +46,7 @@ pipeline {
 
         stage('Verify Health') {
             steps {
-                sh 'sudo docker ps | grep student-app'
+                sh 'docker ps | grep student-app'
                 echo "✅ Pipeline successfully completed."
             }
         }
