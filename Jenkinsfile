@@ -2,67 +2,62 @@ pipeline {
     agent any
 
     environment {
-        // App name matching your docker-compose container_name
         APP_NAME = "student-app"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Pulls the latest code from your Git repository branch
                 checkout scm
             }
         }
 
-        stage('Verify Environment') {
+        stage('Prepare Files') {
             steps {
-                // Since .env and global-bundle.pem should NEVER be committed to Git,
-                // Jenkins must ensure they exist before trying to use docker-compose.
-                // (You can inject them using Jenkins "Credentials Binding Plugin" or manually copy them)
-                script {
-                    if (!fileExists('.env')) {
-                        error "🚨 FATAL ERROR: .env file is missing from the Jenkins workspace!"
-                    }
-                    if (!fileExists('global-bundle.pem')) {
-                        error "🚨 FATAL ERROR: global-bundle.pem is missing from the Jenkins workspace!"
-                    }
+                withCredentials([
+                    file(credentialsId: 'env-file', variable: 'ENV_FILE'),
+                    file(credentialsId: 'pem-file', variable: 'PEM_FILE')
+                ]) {
+                    sh '''
+                    cp $ENV_FILE .env
+                    cp $PEM_FILE global-bundle.pem
+                    '''
                 }
             }
         }
 
         stage('Build Docker') {
             steps {
-                sh 'docker build -t student-app .'
+                sh 'sudo docker build -t student-app .'
             }
         }
 
         stage('Run App') {
             steps {
                 sh '''
-                docker stop student-app || true
-                docker rm student-app || true
-                docker run -d -p 8082:8082 \
+                sudo docker stop student-app || true
+                sudo docker rm student-app || true
+                sudo docker run -d -p 8082:8082 \
                 --env-file .env \
                 --name student-app student-app
                 '''
             }
         }
-        
+
         stage('Verify Health') {
             steps {
-                // Ensure the container actually started up.
-                sh 'docker ps | grep student-app'
-                echo "hellow your pipeline successfully completed."
+                sh 'sudo docker ps | grep student-app'
+                echo "✅ Pipeline successfully completed."
             }
         }
     }
 
     post {
         success {
-            echo "🎉 Deployment Successful! Application is listening on AWS port 8080."
+            echo "🎉 Deployment Successful!"
         }
         failure {
-            echo "❌ Deployment Failed! Check the Jenkins logs in the AWS dashboard."
+            echo "❌ Deployment Failed!"
         }
     }
 }
