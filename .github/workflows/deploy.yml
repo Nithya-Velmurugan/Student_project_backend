@@ -20,6 +20,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
+
             cd /home/ubuntu
 
             # Clone repo if not exists
@@ -28,22 +30,28 @@ jobs:
             fi
 
             cd app
-            git pull
+            git pull origin main
 
             # Create .env file from GitHub secret
             echo "${{ secrets.ENV_FILE }}" > .env
 
-            # Fix docker permission (safe way)
+            # Fix docker permission (optional)
             sudo usermod -aG docker ubuntu || true
+
+            # Stop container using port 8082 (important fix)
+            sudo docker ps -q --filter "publish=8082" | xargs -r sudo docker stop
+            sudo docker ps -a -q --filter "publish=8082" | xargs -r sudo docker rm
+
+            # Remove old container (safety)
+            sudo docker stop student-app || true
+            sudo docker rm student-app || true
 
             # Build image
             sudo docker build -t student-app .
-
-            # Stop old container
-            sudo docker stop student-app || true
-            sudo docker rm student-app || true
 
             # Run new container
             sudo docker run -d -p 8082:8082 \
               --env-file .env \
               --name student-app student-app
+
+            echo "✅ Deployment successful"
