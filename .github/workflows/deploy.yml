@@ -38,6 +38,9 @@ jobs:
             # Fix docker permission (optional)
             sudo usermod -aG docker ubuntu || true
 
+            # Kill ANY process using port 8082
+            sudo fuser -k 8082/tcp || true
+
             # Stop container using port 8082 (important fix)
             sudo docker ps -q --filter "publish=8082" | xargs -r sudo docker stop
             sudo docker ps -a -q --filter "publish=8082" | xargs -r sudo docker rm
