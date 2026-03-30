@@ -1,0 +1,38 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu || mkdir -p /home/ubuntu && cd /home/ubuntu
+
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/Nithya-Velmurugan/Student_project_backend.git .
+            else
+              git pull
+            fi
+
+            docker build -t student-app .
+
+            docker stop student-app || true
+            docker rm student-app || true
+
+            docker run -d -p 8082:8082 \
+              --env-file .env \
+              --name student-app student-app  
